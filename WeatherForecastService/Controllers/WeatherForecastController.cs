@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Weather.Entities.Models;
 using WeatherForecastService;
+using WeatherForecastService.Models;
 
 namespace WeatherForecastService.Controllers
 {
@@ -25,32 +26,52 @@ namespace WeatherForecastService.Controllers
         }
 
         [HttpGet]
-        [Route("{city}")]
+        [Route("Weather/{city}")]
         public async Task<WeatherForecast> Get(string city)
         {
             var forecast = await weatherClient.GetCurrentWeatherAsync(city);
 
             return new WeatherForecast
             {
+                City = forecast.name,
                 Summary = forecast.weather[0].description,
                 TemperatureC = (int)forecast.main.temp,
                 Date = DateTimeOffset.FromUnixTimeSeconds(forecast.dt).DateTime
             };
         }
 
+    
         [HttpGet]
-        [Route("{city}")]
-        public async Task<WindWeather> GetWind(string city)
+        [Route("Wind/{city}")]
+        public async Task<WindWeather> GetForecast(string city)
         {
-              var forecast = await weatherClient.GetWindWeatherAsync(city);
+            var wind = await weatherClient.GetWindWeatherAsync(city);
 
-                return new WindWeather
+            return new WindWeather
+            {   
+                City = wind.name,
+                Direction = Helper.Direction(wind.Wind.deg),
+                Speed = wind.Wind.speed,
+                Date = DateTimeOffset.FromUnixTimeSeconds(wind.dt).DateTime
+            };
+        }
+
+        [HttpGet]
+        [Route("Future/{city}")]
+        public async Task<WeatherForecast> GetFuture(string city)
+        {
+
+            var future = await weatherClient.GetFutureAsync(city);
+            var weatherFiveDaysModel = new FutureWeather
+            {
+                WeatherFiveDays = new List<WeatherForecast>()
+            };
+            return new WeatherForecast
                 {
-                    Speed = forecast.speed.speed,
-                    Direction = forecast.direction.direction,
-                    Date = DateTimeOffset.FromUnixTimeSeconds(forecast.dt).DateTime
-                };
-         
+                Summary = future.weather[0].description,
+                TemperatureC = (int)future.main.temp,
+                Date = DateTimeOffset.FromUnixTimeSeconds(future.dt).DateTime
+            };
         }
     }
 }
