@@ -58,20 +58,17 @@ namespace WeatherForecastService.Controllers
 
         [HttpGet]
         [Route("Future/{city}")]
-        public async Task<WeatherForecast> GetFuture(string city)
+        public async Task<FutureModel> GetFuture(string city)
         {
 
             var future = await weatherClient.GetFutureAsync(city);
-            var weatherFiveDaysModel = new FutureWeather
-            {
-                WeatherFiveDays = new List<WeatherForecast>()
-            };
-            return new WeatherForecast
-                {
-                Summary = future.weather[0].description,
-                TemperatureC = (int)future.main.temp,
-                Date = DateTimeOffset.FromUnixTimeSeconds(future.dt).DateTime
-            };
+            return future;
+            //return new FutureWeather
+            //    {
+            //    Summary = future.weather[0].description,
+            //    TemperatureC = (int)future.main.temp,
+            //    Date = DateTimeOffset.FromUnixTimeSeconds(future.dt).DateTime
+            //};
         }
     }
 }

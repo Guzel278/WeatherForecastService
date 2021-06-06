@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace WeatherForecastService
         public record Forecast(Weather[] weather, Main main, long dt, string name);
         public record Wind(decimal deg, decimal speed);
         public record WindWeather(Wind Wind, long dt, string name);
+       
 
 
 
@@ -47,12 +49,26 @@ namespace WeatherForecastService
         }
     
 
-        public async Task<Forecast> GetFutureAsync(string city)
+        public async Task<FutureModel> GetFutureAsync(string city)
         {
-           
-          return await httpClient.GetFromJsonAsync<Forecast>(
-                $"https://{serviceSettings.OpenWeatherHost}/data/2.5/forecast?q={city}&appid={serviceSettings.ApiKey}&units=metric");
-            
+            HttpResponseMessage response = await httpClient.GetAsync($"https://{serviceSettings.OpenWeatherHost}/data/2.5/forecast?q={city}&appid={serviceSettings.ApiKey}&units=metric");
+            var contect = await response.Content.ReadAsStringAsync();
+            var futures = JsonConvert.DeserializeObject<FutureWeather>(contect);
+            FutureModel futureModel = new FutureModel();
+            futureModel.FutureEntityModel  = new List<FutureEntityModel>();
+            foreach (var item in futures.FutureEntity)
+            {
+                FutureEntityModel futureEntityModel = new FutureEntityModel
+                {
+                   City = city,
+                   Date = item.Date,
+                   TemperatureC = item.mainTemp.Temp
+                };
+                futureModel.FutureEntityModel.Add(futureEntityModel);
+            }
+            //var forecast =  await httpClient.GetFromJsonAsync<Forecast>(
+            //    $"https://{serviceSettings.OpenWeatherHost}/data/2.5/forecast?q={city}&appid={serviceSettings.ApiKey}&units=metric");
+            return futureModel;
         }
     }
 }
