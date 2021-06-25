@@ -1,0 +1,57 @@
+2. Написать микросервис, который использует в качестве источника данных api https://openweathermap.org/current 
+
+В микросервисе должны быть реализованы 3 эндпойнта (api метода):
+
+1. Возвращает текущую температуру в указанном городе в цельсиях и фаренгейтах
+
+например: GET /weather/temperature/{cityName}/{celsius|fahrenheit}
+
+Response:
+
+{
+  "city" : "{cityName}",
+  "temperature" : {temperatureValue},
+  "metric" : "{celsius|fahrenheit}"
+}
+
+2. Возвращает текущее направление и скорость ветра в указанном городе 
+
+например GET /weather/wind/{cityName}
+
+Response:
+
+{
+  "city" : "{cityName}",
+  "speed" : {windSpeed},
+  "direction" : "{North|East|South|West|Northeast|Southeast|Southwest|Northwest}"
+}
+
+3. Погоду на 5 дней вперед по указанному городу
+
+Использовать апи (https://openweathermap.org/forecast5)
+
+например GET /weather/{cityName}/future/{celsius|fahrenheit}
+
+Response:
+
+[
+  {
+    "date" : "2020-12-16"
+    "city" : "{cityName}",
+    "temperature" : {temperature},
+    "temperatureMetric" : "{celsius|fahrenheit}"
+  },
+  {
+    "date" : "2020-12-17"
+    "city" : "{cityName}",
+    "temperature" : {temperature},
+    "temperatureMetric" : "{celsius|fahrenheit}"
+  },
+  ...
+  {
+    "date" : "2020-12-20"
+    "city" : "{cityName}",
+    "temperature" : {temperature},
+    "temperatureMetric" : "{celsius|fahrenheit}"
+  }
+]
